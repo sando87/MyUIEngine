@@ -1,0 +1,9 @@
+.vs/
+Debug/
+Release/
+x64/
+jGUI/Debug/
+jGUI/Release/
+jGUI/x64/
+jGUI.VC.VC.opendb
+jGUI.VC.db

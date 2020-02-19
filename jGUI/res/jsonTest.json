@@ -1,0 +1,128 @@
+{
+	"Childs" : 
+	[
+		{
+			"Align" : 4,
+			"Childs" : null,
+			"Color" : 
+			[
+				240,
+				240,
+				240,
+				255
+			],
+			"ColorButton" : 
+			[
+				225,
+				225,
+				225,
+				255
+			],
+			"ColorFont" : 
+			[
+				0,
+				0,
+				0,
+				255
+			],
+			"ColorOutline" : 
+			[
+				173,
+				173,
+				173,
+				255
+			],
+			"Enable" : true,
+			"FontName" : "malgun.ttf",
+			"FontSize" : 20,
+			"Height" : 30,
+			"Image" : 
+			{
+				"bottom" : 1.0,
+				"fullname" : "defaultImage.png",
+				"left" : 0.0,
+				"right" : 1.0,
+				"top" : 0.0
+			},
+			"LocalX" : 10,
+			"LocalY" : 10,
+			"Name" : "Button",
+			"Style" : 0,
+			"Text" : "text",
+			"Type" : 1,
+			"Visiable" : true,
+			"Width" : 80
+		},
+		{
+			"Align" : 4,
+			"Childs" : null,
+			"Color" : 
+			[
+				240,
+				240,
+				240,
+				255
+			],
+			"ColorFont" : 
+			[
+				0,
+				0,
+				0,
+				255
+			],
+			"Enable" : true,
+			"FontName" : "malgun.ttf",
+			"FontSize" : 20,
+			"Height" : 30,
+			"LocalX" : 100,
+			"LocalY" : 10,
+			"Name" : "Font",
+			"Style" : 0,
+			"Text" : "text",
+			"Type" : 3,
+			"Visiable" : true,
+			"Width" : 80
+		},
+		{
+			"Childs" : null,
+			"Color" : 
+			[
+				240,
+				240,
+				240,
+				255
+			],
+			"Enable" : true,
+			"Height" : 30,
+			"Image" : 
+			{
+				"bottom" : 1.0,
+				"fullname" : "defaultImage.png",
+				"left" : 0.0,
+				"right" : 1.0,
+				"top" : 0.0
+			},
+			"LocalX" : 10,
+			"LocalY" : 50,
+			"Name" : "Image",
+			"Type" : 2,
+			"Visiable" : true,
+			"Width" : 80
+		}
+	],
+	"Color" : 
+	[
+		240,
+		240,
+		240,
+		255
+	],
+	"Enable" : true,
+	"Height" : 200,
+	"LocalX" : 0,
+	"LocalY" : 0,
+	"Name" : "RootView",
+	"Type" : 0,
+	"Visiable" : true,
+	"Width" : 300
+}
