@@ -36,6 +36,7 @@ public:
 	void SetResourcePath(string pathname) { mResourcePath = pathname; }
 	string GetResourcePath() { return mResourcePath; }
 	jView * ParseJson(string filename);
+	jView * ParseJsonString(string json);
 	void LoadViews();
 	void MouseEventCall();
 	void Draw();
@@ -45,6 +46,9 @@ public:
 	jView *CreateView(int mouseX, int mouseY, int type);
 	jView *FindTopView(int mouseX, int mouseY);
 	jView *FindView(int id);
+	void DeleteView(int id);
+	void ChangeParent(int id, int parentID);
+	void ChangeNeighbor(int id, int neighborID);
 
 private:
 	EventParams mCurrentEventInfo;

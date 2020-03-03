@@ -23,11 +23,21 @@ jUISystem::~jUISystem()
 jView * jUISystem::ParseJson(string filename)
 {
 	if (mRootView)
-		return mRootView;
+		delete mRootView;
 
 	string fullname = mResourcePath + filename;
 	string jsonText = ReadFile(fullname);
 	Json::Value rootNode = ToNode(jsonText);
+	mRootView = Parse(rootNode);
+	return mRootView;
+}
+
+jView * jUISystem::ParseJsonString(string json)
+{
+	if (mRootView)
+		delete mRootView;
+
+	Json::Value rootNode = ToNode(json);
 	mRootView = Parse(rootNode);
 	return mRootView;
 }
@@ -87,7 +97,8 @@ jView *jUISystem::CreateView(int mouseX, int mouseY, int type)
 
 	jViewType viewType = (jViewType)type;
 	jView *newView = CreateView(viewType);
-	parent->AddChild(newView);
+	newView->mParent = parent;
+	parent->Childs.push_back(newView);
 	Point2 parentAbPos = parent->mRectAbsolute.GetMin();
 	newView->LocalX = (int)(mouseX - parentAbPos.x);
 	newView->LocalY = (int)(mouseY - parentAbPos.y);
@@ -107,6 +118,32 @@ jView *jUISystem::FindView(int id)
 		return nullptr;
 
 	return mViews[id];
+}
+void jUISystem::DeleteView(int id)
+{
+	jView* view = mViews[id];
+	view->UnLink();
+	delete view;
+	mViews.erase(id);
+}
+void jUISystem::ChangeParent(int id, int parentID)
+{
+	jView* me = mViews[id];
+	if (me == mRootView)
+		return;
+
+	jView* parent = mViews[parentID];
+	me->ChangeParent(parent);
+}
+
+void jUISystem::ChangeNeighbor(int id, int neighborID)
+{
+	jView* me = mViews[id];
+	jView* neighbor = mViews[neighborID];
+	if (me == mRootView || neighbor == mRootView)
+		return;
+
+	me->ChangeNeighbor(neighbor);
 }
 
 jView * jUISystem::CallEventUpDownClick(EventParams & info)
@@ -234,7 +271,8 @@ jView * jUISystem::Parse(Json::Value & jsonNode)
 	for (int i = 0; i < count; ++i)
 	{
 		jView *child = Parse(childs[i]);
-		parent->AddChild(child);
+		child->mParent = parent;
+		parent->Childs.push_back(child);
 	}
 	return parent;
 }

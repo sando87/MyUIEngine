@@ -64,9 +64,6 @@ jView * jView::FindTopView(int worldX, int worldY)
 
 void jView::ChangeParent(jView * newParent)
 {
-	if (mParent == newParent)
-		return;
-
 	for (auto iter = mParent->Childs.begin(); iter != mParent->Childs.end(); ++iter)
 	{
 		if (*iter == this)
@@ -82,12 +79,46 @@ void jView::ChangeParent(jView * newParent)
 	LoadAll();
 }
 
-void jView::AddChild(jView * child)
+void jView::ChangeNeighbor(jView * newNeighbor)
 {
-	child->mParent = this;
-	Childs.push_back(child);
-}
+	list<jView *>::iterator iter_this;
+	for (iter_this = mParent->Childs.begin(); iter_this != mParent->Childs.end(); ++iter_this)
+	{
+		if (*iter_this == this)
+		{
+			mParent->Childs.erase(iter_this);
+			break;
+		}
+	}
+	
+	jView *parentNeib = newNeighbor->mParent;
+	list<jView *>::iterator iter_neib;
+	for (iter_neib = parentNeib->Childs.begin(); iter_neib != parentNeib->Childs.end(); ++iter_neib)
+	{
+		if (*iter_neib == newNeighbor)
+		{
+			++iter_neib;
+			parentNeib->Childs.insert(iter_neib, this);
+			break;
+		}
+	}
 
+	mParent = parentNeib;
+	LocalX = (int)(mRectAbsolute.Left() - parentNeib->mRectAbsolute.Left());
+	LocalY = (int)(mRectAbsolute.Top() - parentNeib->mRectAbsolute.Top());
+	LoadAll();
+}
+void jView::UnLink()
+{
+	for (auto iter = mParent->Childs.begin(); iter != mParent->Childs.end(); ++iter)
+	{
+		if (*iter == this)
+		{
+			mParent->Childs.erase(iter);
+			break;
+		}
+	}
+}
 jView * jView::FindChild(string name)
 {
 	for (jView *child : Childs)

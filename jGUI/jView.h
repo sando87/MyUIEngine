@@ -37,7 +37,8 @@ public:
 	void DrawAll();
 	jView *FindTopView(int worldX, int worldY);
 	void ChangeParent(jView *newParent);
-	void AddChild(jView *child);
+	void ChangeNeighbor(jView *newNeighbor);
+	void UnLink();
 	jView * FindChild(string name);
 	string ToJsonString();
 
