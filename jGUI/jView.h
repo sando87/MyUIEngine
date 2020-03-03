@@ -32,6 +32,7 @@ public:
 	function<void(Point2)> EventMouseMove;
 	function<void(Point2)> EventMouseLeave;
 
+	int GetID() { return mID; }
 	void LoadAll();
 	void DrawAll();
 	jView *FindTopView(int worldX, int worldY);
@@ -43,6 +44,7 @@ public:
 	jRectangle GetRectAbsolute() { return mRectAbsolute; }
 
 protected:
+	int mID;
 	jView * mParent;
 	DrawingParams mRenderParam;
 	bool mDowned;

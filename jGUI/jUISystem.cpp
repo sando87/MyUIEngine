@@ -101,6 +101,13 @@ jView *jUISystem::FindTopView(int mouseX, int mouseY)
 
 	return nullptr;
 }
+jView *jUISystem::FindView(int id)
+{
+	if (mViews.find(id) == mViews.end())
+		return nullptr;
+
+	return mViews[id];
+}
 
 jView * jUISystem::CallEventUpDownClick(EventParams & info)
 {
@@ -244,15 +251,18 @@ jView * jUISystem::CreateView(Json::Value & jsonNode)
 }
 jView *jUISystem::CreateView(jViewType type)
 {
+	jView *view = nullptr;
 	switch (type)
 	{
-	case View: return new jView();
-	case Button: return new jViewButton();
-	case Font: return new jViewFont();
-	case Image: return new jViewImage();
+	case View: view = new jView(); break;
+	case Button: view = new jViewButton(); break;
+	case Font: view = new jViewFont(); break;
+	case Image: view = new jViewImage(); break;
 	default: break;
 	}
-	return nullptr;
+	int id = view->GetID();
+	mViews[id] = view;
+	return view;
 }
 
 Json::Value jUISystem::Serialize(jView * view)

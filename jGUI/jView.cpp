@@ -4,6 +4,10 @@
 
 jView::jView()
 {
+	static int gID = 1;
+	mID = gID;
+	gID++;
+
 	Name = "Name";
 	Type = jViewType::View;
 	LocalX = 0;
@@ -121,6 +125,7 @@ void jView::OnDraw()
 
 void jView::OnSerialize(Json::Value & node)
 {
+	node["#ID"] = mID;
 	node["Name"] = Name;
 	node["Type"] = Type;
 	node["#Type"] = "Enum&View,Button,Font,Image";

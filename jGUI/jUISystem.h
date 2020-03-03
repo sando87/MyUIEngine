@@ -44,12 +44,14 @@ public:
 	void UpdateView(jView *view, string jsonString);
 	jView *CreateView(int mouseX, int mouseY, int type);
 	jView *FindTopView(int mouseX, int mouseY);
+	jView *FindView(int id);
 
 private:
 	EventParams mCurrentEventInfo;
 	EventParams mPreviousEventInfo;
 	jView *mRootView;
 	string mResourcePath;
+	unordered_map<int, jView*> mViews;
 
 	jView *CallEventUpDownClick(EventParams & info);
 	jView *CallEventEnterLeaveMove(EventParams & info);
