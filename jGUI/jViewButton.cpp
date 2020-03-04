@@ -45,7 +45,7 @@ void jViewButton::OnLoad()
 	if (mTexture)
 	{
 		mRenderParam.rect = mRectAbsolute;
-		mRenderParam.color = jColor(255, 255, 255, 255);
+		mRenderParam.color = jColor(220, 220, 220, 255);
 		mRenderParam.texture = mTexture->texture;
 		mRenderParam.uv = jRectangle(Image.left, Image.top, Image.right - Image.left, Image.bottom - Image.top);
 	}
@@ -64,9 +64,21 @@ void jViewButton::OnDraw()
 	{
 		DrawingParams params = mRenderParam;
 		if (mDowned)
+		{
+			Point2 downedPos = mRectAbsolute.GetPos() + Point2(1, 1);
+			params.rect.SetPosSize(downedPos, mRectAbsolute.GetSize());
 			params.color = jColor(200, 200, 200, 255);
+		}
 		else if (mHovered)
+		{
+			mRenderParam.rect = mRectAbsolute;
+			params.color = jColor(255, 255, 255, 255);
+		}
+		else
+		{
+			mRenderParam.rect = mRectAbsolute;
 			params.color = jColor(220, 220, 220, 255);
+		}
 
 		jUISystem::GetInst()->EventDrawTexture(params);
 	}
