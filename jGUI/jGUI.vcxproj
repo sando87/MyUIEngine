@@ -137,6 +137,7 @@
     <ClInclude Include="jUISystem.h" />
     <ClInclude Include="jViewButton.h" />
     <ClInclude Include="jViewFont.h" />
+    <ClInclude Include="jViewGrid.h" />
     <ClInclude Include="jViewImage.h" />
     <ClInclude Include="Point2.h" />
   </ItemGroup>
@@ -150,6 +151,7 @@
     <ClCompile Include="jUISystem.cpp" />
     <ClCompile Include="jViewButton.cpp" />
     <ClCompile Include="jViewFont.cpp" />
+    <ClCompile Include="jViewGrid.cpp" />
     <ClCompile Include="jViewImage.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>

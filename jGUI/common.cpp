@@ -1,5 +1,6 @@
 #include "common.h"
 #include "jUISystem.h"
+#include "jCacheMgr.h"
 
 unsigned int ToKey(const char *buf, int size)
 {
@@ -41,6 +42,25 @@ bool jUIBitmap::Load()
 	}
 	texture = jUISystem::GetInst()->OpLoadTexture(this);
 	return texture ? true : false;
+}
+
+jUIBitmap * jUIBitmap::Cache(string filename)
+{
+	if (filename.length() <= 0)
+		return nullptr;
+
+	unsigned int key = ToKey(filename.c_str(), filename.length());
+	jUIBitmap *texture = (jUIBitmap *)jCacheMgr::GetInst().Cache(key, [&]() {
+		jUIBitmap *bitmap = new jUIBitmap();
+		bitmap->fullname = jUISystem::GetInst()->GetResourcePath() + filename;
+		if (bitmap->Load() == false)
+		{
+			delete bitmap;
+			bitmap = nullptr;
+		}
+		return bitmap;
+	});
+	return texture;
 }
 
 void DrawingParams::Clip(jRectangle _rect)

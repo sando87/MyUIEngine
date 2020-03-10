@@ -4,10 +4,6 @@
 
 jView::jView()
 {
-	static int gID = 1;
-	mID = gID;
-	gID++;
-
 	Name = "Name";
 	Type = jViewType::View;
 	LocalX = 0;
@@ -61,63 +57,29 @@ jView * jView::FindTopView(int worldX, int worldY)
 	}
 	return findView;
 }
-
-void jView::ChangeParent(jView * newParent)
+void jView::ChangeNeighbor(jView * toNeighbor)
 {
-	for (auto iter = mParent->Childs.begin(); iter != mParent->Childs.end(); ++iter)
-	{
-		if (*iter == this)
-		{
-			mParent->Childs.erase(iter);
-			break;
-		}
-	}
-	newParent->Childs.push_back(this);
-	mParent = newParent;
-	LocalX = (int)(mRectAbsolute.Left() - newParent->mRectAbsolute.Left());
-	LocalY = (int)(mRectAbsolute.Top() - newParent->mRectAbsolute.Top());
-	LoadAll();
+	if (toNeighbor->mParent != mParent)
+		return;
+
+	list<jView *>::iterator iterMe = find(Childs.begin(), Childs.end(), this);
+	list<jView *>::iterator iterTo = find(Childs.begin(), Childs.end(), toNeighbor);
+	Childs.erase(iterMe);
+	Childs.insert(iterTo, this);
 }
-
-void jView::ChangeNeighbor(jView * newNeighbor)
+void jView::AddChild(jView *child)
 {
-	list<jView *>::iterator iter_this;
-	for (iter_this = mParent->Childs.begin(); iter_this != mParent->Childs.end(); ++iter_this)
-	{
-		if (*iter_this == this)
-		{
-			mParent->Childs.erase(iter_this);
-			break;
-		}
-	}
-	
-	jView *parentNeib = newNeighbor->mParent;
-	list<jView *>::iterator iter_neib;
-	for (iter_neib = parentNeib->Childs.begin(); iter_neib != parentNeib->Childs.end(); ++iter_neib)
-	{
-		if (*iter_neib == newNeighbor)
-		{
-			++iter_neib;
-			parentNeib->Childs.insert(iter_neib, this);
-			break;
-		}
-	}
-
-	mParent = parentNeib;
-	LocalX = (int)(mRectAbsolute.Left() - parentNeib->mRectAbsolute.Left());
-	LocalY = (int)(mRectAbsolute.Top() - parentNeib->mRectAbsolute.Top());
-	LoadAll();
+	child->mParent = this;
+	Childs.push_back(child);
 }
-void jView::UnLink()
+void jView::SubChild(jView *child)
 {
-	for (auto iter = mParent->Childs.begin(); iter != mParent->Childs.end(); ++iter)
-	{
-		if (*iter == this)
-		{
-			mParent->Childs.erase(iter);
-			break;
-		}
-	}
+	auto iter = std::find(Childs.begin(), Childs.end(), child);
+	if (iter == Childs.end())
+		return;
+
+	child->mParent = nullptr;
+	Childs.erase(iter);
 }
 jView * jView::FindChild(string name)
 {
@@ -159,7 +121,7 @@ void jView::OnSerialize(Json::Value & node)
 	node["#ID"] = mID;
 	node["Name"] = Name;
 	node["Type"] = Type;
-	node["#Type"] = "Enum&View,Button,Font,Image";
+	node["#Type"] = "Enum&View,Button,Font,Image,Grid";
 	node["LocalX"] = LocalX;
 	node["LocalY"] = LocalY;
 	node["Width"] = Width;

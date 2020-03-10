@@ -8,12 +8,13 @@
 #include <vector>
 using namespace std;
 
+#define _errorIf(p)  if(p)printf("error [%s] [%d]\n", __FILE__, __LINE__)
 #define _errorTrace() printf("error [%s] [%d]\n", __FILE__, __LINE__)
 
 
 enum jViewType
 {
-	View, Button, Image, Font
+	View, Button, Image, Font, Grid
 };
 enum jFontAlign
 {
@@ -52,6 +53,7 @@ public:
 	jUIBitmap();
 	~jUIBitmap();
 	bool Load();
+	static jUIBitmap* Cache(string filename);
 };
 
 struct PropImage

@@ -25,22 +25,7 @@ jViewButton::~jViewButton()
 void jViewButton::OnLoad()
 {
 	jViewFont::OnLoad();
-	if (Image.filename.length() > 0)
-	{
-		unsigned int key = ToKey(Image.filename.c_str(), Image.filename.length());
-		mTexture = (jUIBitmap *)jCacheMgr::GetInst().Cache(key, [&]() {
-			jUIBitmap *bitmap = new jUIBitmap();
-			bitmap->fullname = jUISystem::GetInst()->GetResourcePath() + Image.filename;
-			if (bitmap->Load() == false)
-			{
-				delete bitmap;
-				bitmap = nullptr;
-			}
-			return bitmap;
-		});
-	}
-	else
-		mTexture = nullptr;
+	mTexture = jUIBitmap::Cache(Image.filename);
 
 	if (mTexture)
 	{

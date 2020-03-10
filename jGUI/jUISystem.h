@@ -62,7 +62,6 @@ private:
 	string ReadFile(string fullename);
 	Json::Value ToNode(string jsonText);
 	jView *Parse(Json::Value & jsonNode);
-	jView *CreateView(Json::Value & jsonNode);
 	jView *CreateView(jViewType type);
 	Json::Value Serialize(jView *view);
 

@@ -7,6 +7,7 @@
 #include "jViewButton.h"
 #include "jViewFont.h"
 #include "jViewImage.h"
+#include "jViewGrid.h"
 
 
 jUISystem::jUISystem()
@@ -97,11 +98,10 @@ jView *jUISystem::CreateView(int mouseX, int mouseY, int type)
 
 	jViewType viewType = (jViewType)type;
 	jView *newView = CreateView(viewType);
-	newView->mParent = parent;
-	parent->Childs.push_back(newView);
 	Point2 parentAbPos = parent->mRectAbsolute.GetMin();
 	newView->LocalX = (int)(mouseX - parentAbPos.x);
 	newView->LocalY = (int)(mouseY - parentAbPos.y);
+	parent->AddChild(newView);
 	newView->OnLoad();
 	return newView;
 }
@@ -122,7 +122,7 @@ jView *jUISystem::FindView(int id)
 void jUISystem::DeleteView(int id)
 {
 	jView* view = mViews[id];
-	view->UnLink();
+	view->mParent->SubChild(view);
 	delete view;
 	mViews.erase(id);
 }
@@ -133,7 +133,8 @@ void jUISystem::ChangeParent(int id, int parentID)
 		return;
 
 	jView* parent = mViews[parentID];
-	me->ChangeParent(parent);
+	me->mParent->SubChild(me);
+	parent->AddChild(me);
 }
 
 void jUISystem::ChangeNeighbor(int id, int neighborID)
@@ -141,6 +142,8 @@ void jUISystem::ChangeNeighbor(int id, int neighborID)
 	jView* me = mViews[id];
 	jView* neighbor = mViews[neighborID];
 	if (me == mRootView || neighbor == mRootView)
+		return;
+	if (me->mParent != neighbor->mParent)
 		return;
 
 	me->ChangeNeighbor(neighbor);
@@ -264,29 +267,20 @@ Json::Value jUISystem::ToNode(string jsonText)
 
 jView * jUISystem::Parse(Json::Value & jsonNode)
 {
-	jView *parent = CreateView(jsonNode);
+	jViewType type = (jViewType)jsonNode["Type"].asInt();
+	jView *parent = CreateView(type);
+	parent->OnDeserialize(jsonNode);
 	
 	Json::Value& childs = jsonNode["Childs"];
 	int count = childs.size();
 	for (int i = 0; i < count; ++i)
 	{
 		jView *child = Parse(childs[i]);
-		child->mParent = parent;
-		parent->Childs.push_back(child);
+		parent->AddChild(child);
 	}
 	return parent;
 }
 
-jView * jUISystem::CreateView(Json::Value & jsonNode)
-{
-	jViewType type = (jViewType)jsonNode["Type"].asInt();
-	jView *view = CreateView(type);
-	if (view == nullptr)
-		_errorTrace();
-
-	view->OnDeserialize(jsonNode);
-	return view;
-}
 jView *jUISystem::CreateView(jViewType type)
 {
 	jView *view = nullptr;
@@ -296,10 +290,14 @@ jView *jUISystem::CreateView(jViewType type)
 	case Button: view = new jViewButton(); break;
 	case Font: view = new jViewFont(); break;
 	case Image: view = new jViewImage(); break;
+	case Grid: view = new jViewGrid(); break;
 	default: break;
 	}
-	int id = view->GetID();
-	mViews[id] = view;
+
+	static int gID = 1;
+	view->mID = gID;
+	mViews[gID] = view;
+	gID++;
 	return view;
 }
 
