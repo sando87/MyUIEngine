@@ -135,6 +135,7 @@ void jView::OnSerialize(Json::Value & node)
 	node["#Color"] = "Color";
 	node["Visiable"] = Visiable;
 	node["Enable"] = Enable;
+	node["Tag"] = Tag;
 }
 
 void jView::OnDeserialize(Json::Value & node)
@@ -151,6 +152,7 @@ void jView::OnDeserialize(Json::Value & node)
 	Color.a = node["Color"][3].asUInt();
 	Visiable = node["Visiable"].asBool();
 	Enable = node["Enable"].asBool();
+	Tag = node["Tag"].asString();
 }
 
 

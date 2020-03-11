@@ -119,6 +119,13 @@ jView *jUISystem::FindView(int id)
 
 	return mViews[id];
 }
+jView * jUISystem::FindView(string name)
+{
+	unordered_map<int, jView*>::iterator iter = find_if(mViews.begin(), mViews.end(), [&](auto item) {
+		return item.second->Name == name;
+	});
+	return iter == mViews.end() ? nullptr : iter->second;
+}
 void jUISystem::DeleteView(int id)
 {
 	jView* view = mViews[id];

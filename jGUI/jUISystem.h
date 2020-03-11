@@ -44,8 +44,10 @@ public:
 	string ToJsonString();
 	void UpdateView(jView *view, string jsonString);
 	jView *CreateView(int mouseX, int mouseY, int type);
+	jView *CreateView(jViewType type);
 	jView *FindTopView(int mouseX, int mouseY);
 	jView *FindView(int id);
+	jView *FindView(string name);
 	void DeleteView(int id);
 	void ChangeParent(int id, int parentID);
 	void ChangeNeighbor(int id, int neighborID);
@@ -62,7 +64,6 @@ private:
 	string ReadFile(string fullename);
 	Json::Value ToNode(string jsonText);
 	jView *Parse(Json::Value & jsonNode);
-	jView *CreateView(jViewType type);
 	Json::Value Serialize(jView *view);
 
 	jUISystem();

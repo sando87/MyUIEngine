@@ -143,6 +143,14 @@ jView* jViewGrid::GetChild(Point2 pt)
 
 	return mGridChilds[idx];
 }
+void jViewGrid::ClearChild()
+{
+	for (auto iter : Childs)
+		delete iter;
+
+	Childs.clear();
+	mGridChilds.clear();
+}
 int jViewGrid::FindViewOnGrid(jView* view)
 {
 	int idxX = view->LocalX / mStepWidth;

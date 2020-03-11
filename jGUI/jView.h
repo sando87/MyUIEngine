@@ -23,6 +23,8 @@ public:
 	jColor Color;
 	bool Visiable;
 	bool Enable;
+	string Tag;
+	void* Object;
 	list<jView *> Childs;
 
 	function<void(Point2)> EventMouseDown;

@@ -22,6 +22,7 @@ public:
 	jView* GetChild(int idx);
 	jView* GetChild(int idxX, int idxY);
 	jView* GetChild(Point2 pt);
+	void ClearChild();
 
 protected:
 	unordered_map<int, jView*> mGridChilds;
@@ -35,8 +36,6 @@ protected:
 	virtual void OnDeserialize(Json::Value & node);
 
 	int FindViewOnGrid(jView* view);
-	void CallEventClick(Point2 pt);
-	void CallEventMove(Point2 pt);
 
 };
 
