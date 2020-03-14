@@ -21,9 +21,9 @@ jViewFont::~jViewFont()
 
 void jViewFont::OnLoad()
 {
-	jView::OnLoad();
 	wstring uniText(Text.begin(), Text.end());
 	mFont.Load(jUISystem::GetInst()->GetResourcePath() + FontName, FontSize, uniText);
+	jView::OnLoad();
 
 	Point2 pos;
 	Point2 size = mFont.Size();

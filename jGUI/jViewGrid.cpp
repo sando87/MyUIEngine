@@ -1,5 +1,6 @@
 #include "jViewGrid.h"
 #include "jUISystem.h"
+#include "jViewImage.h"
 
 jViewGrid::jViewGrid()
 {
@@ -13,9 +14,9 @@ jViewGrid::jViewGrid()
 	ColumnCount = 1;
 	RowCount = 1;
 
-	mTexture = nullptr;
-	mStepWidth = Width;
-	mStepHeight = Height;
+	mStepWidth = 0;
+	mStepHeight = 0;
+	mPreIdx = -1;
 }
 
 jViewGrid::~jViewGrid()
@@ -25,28 +26,61 @@ jViewGrid::~jViewGrid()
 void jViewGrid::OnLoad()
 {
 	jView::OnLoad();
-	mTexture = jUIBitmap::Cache(ImageCell.filename);
-	mStepWidth = Width / ColumnCount;
-	mStepHeight = Height / RowCount;
+	mStepWidth = GetWidth() / ColumnCount;
+	mStepHeight = GetHeight() / RowCount;
+
+	mGridChilds.resize(ColumnCount * RowCount);
+	for (int y = 0; y < RowCount; ++y)
+	{
+		for (int x = 0; x < ColumnCount; ++x)
+		{
+			int localX = int(x * mStepWidth);
+			int localY = int(y * mStepHeight);
+			int idx = y * ColumnCount + x;
+			jViewImage* imageView = (jViewImage*)jUISystem::GetInst()->CreateView(jViewType::Image);
+			imageView->LocalX = to_string(localX);
+			imageView->LocalY = to_string(localY);
+			imageView->Width = to_string((int)mStepWidth);
+			imageView->Height = to_string((int)mStepHeight);
+			imageView->Image = ImageCell;
+			imageView->Enable = false;
+			imageView->UserData["Idx"] = idx;
+			AddChild(imageView);
+			mGridChilds[idx] = imageView;
+		}
+	}
 
 	mRenderParam.rect = mRectAbsolute;
-	mRenderParam.color = jColor(255, 255, 255, 255);
-	mRenderParam.texture = mTexture ? mTexture->texture : nullptr;
-	mRenderParam.uv = jRectangle(0, 0, ColumnCount, RowCount);
+	mRenderParam.color = jColor(0, 0, 0, 0);
+	mRenderParam.texture = nullptr;
+	mRenderParam.uv = jRectangle(0, 0, 0, 0);
 
-	EventMouseClick = [&](Point2 pt) {
-		int idxX = (int)((pt.x - mRectAbsolute.GetMin().x) / mStepWidth);
-		int idxY = (int)((pt.y - mRectAbsolute.GetMin().y) / mStepHeight);
-		int idx = idxY * ColumnCount + idxX;
+	EventMouseClick = [&](jView* view, Point2 pt) {
+		int idx = ToIndex(pt - mRectAbsolute.GetMin());
 		if (EventGridClick != nullptr)
-			EventGridClick(idx);
+			EventGridClick(mGridChilds[idx], pt);
 	};
-	EventMouseMove = [&](Point2 pt) {
-		int idxX = (int)((pt.x - mRectAbsolute.GetMin().x) / mStepWidth);
-		int idxY = (int)((pt.y - mRectAbsolute.GetMin().y) / mStepHeight);
-		int idx = idxY * ColumnCount + idxX;
-		if (EventGridHover != nullptr)
-			EventGridHover(idx);
+
+	EventMouseEnter = [&](jView* view, Point2 pt) {
+		int idx = ToIndex(pt - mRectAbsolute.GetMin());
+		if (EventGridEnter != nullptr)
+			EventGridEnter(mGridChilds[idx], pt);
+		mPreIdx = idx;
+	};
+	EventMouseMove = [&](jView* view, Point2 pt) {
+		int idx = ToIndex(pt - mRectAbsolute.GetMin());
+		if (idx != mPreIdx)
+		{
+			if (EventGridLeave != nullptr)
+				EventGridLeave(mGridChilds[mPreIdx], pt);
+			if (EventGridEnter != nullptr)
+				EventGridEnter(mGridChilds[idx], pt);
+			mPreIdx = idx;
+		}
+	};
+	EventMouseLeave = [&](jView* view, Point2 pt) {
+		if (EventGridLeave != nullptr)
+			EventGridLeave(mGridChilds[mPreIdx], pt);
 	};
 }
 
@@ -79,85 +113,34 @@ void jViewGrid::OnDeserialize(Json::Value & node)
 	Json::Value imgNode = node["ImageCell"];
 	ImageCell.filename = imgNode["filename"].asString();
 	ImageCell.left = imgNode["left"].asFloat();
-	ImageCell.right = (float)ColumnCount;
+	ImageCell.right = imgNode["right"].asFloat();
 	ImageCell.top = imgNode["top"].asFloat();
-	ImageCell.bottom = (float)RowCount;
+	ImageCell.bottom = imgNode["bottom"].asFloat();
 }
 
-
-void jViewGrid::AddChild(jView *child)
+jView* jViewGrid::FindEmptyChild()
 {
-	int idxX = child->LocalX / mStepWidth;
-	int idxY = child->LocalY / mStepHeight;
-	int idx = idxY * ColumnCount + idxX;
-	_errorIf(mGridChilds.find(idx) != mGridChilds.end());
-
-	mGridChilds[idx] = child;
-	child->LocalX = idxX * mStepWidth;
-	child->LocalY = idxY * mStepHeight;
-	jView::AddChild(child);
-		
+	for (jView* view : mGridChilds)
+		if (view->Childs.empty())
+			return view;
+	return nullptr;
 }
-void jViewGrid::SubChild(jView *child)
+jView* jViewGrid::GetChild(unsigned int idx)
 {
-	int idx = FindViewOnGrid(child);
-	_errorIf(idx < 0);
-
-	mGridChilds.erase(idx);
-	jView::SubChild(child);
-}
-void jViewGrid::MoveTo(int idx, jView *movingChild)
-{
-	int preIdx = FindViewOnGrid(movingChild);
-	_errorIf(preIdx < 0);
-
-	mGridChilds.erase(preIdx);
-	
-	if (mGridChilds.find(idx) != mGridChilds.end())
-		mGridChilds[preIdx] = mGridChilds[idx];
-
-	mGridChilds[idx] = movingChild;
-}
-jView* jViewGrid::GetChild(int idx)
-{
-	if (mGridChilds.find(idx) == mGridChilds.end())
-		return nullptr;
-
+	_errorIf(mGridChilds.size() <= idx);
 	return mGridChilds[idx];
 }
-jView* jViewGrid::GetChild(int idxX, int idxY)
-{
-	int idx = idxY * ColumnCount + idxX;
-	if (mGridChilds.find(idx) == mGridChilds.end())
-		return nullptr;
 
-	return mGridChilds[idx];
+bool jViewGrid::IsEmpty(unsigned int idx)
+{
+	_errorIf(mGridChilds.size() <= idx);
+	jView* view = mGridChilds[idx];
+	return view->Childs.empty() ? true : false;
 }
-jView* jViewGrid::GetChild(Point2 pt)
-{
-	int idxX = (int)(pt.x / mStepWidth);
-	int idxY = (int)(pt.y / mStepHeight);
-	int idx = idxY * ColumnCount + idxX;
-	if (mGridChilds.find(idx) == mGridChilds.end())
-		return nullptr;
 
-	return mGridChilds[idx];
-}
-void jViewGrid::ClearChild()
+int jViewGrid::ToIndex(Point2 local)
 {
-	for (auto iter : Childs)
-		delete iter;
-
-	Childs.clear();
-	mGridChilds.clear();
-}
-int jViewGrid::FindViewOnGrid(jView* view)
-{
-	int idxX = view->LocalX / mStepWidth;
-	int idxY = view->LocalY / mStepHeight;
-	int idx = idxY * ColumnCount + idxX;
-	if (mGridChilds.find(idx) == mGridChilds.end())
-		return -1;
-
-	return idx;
+	int idxX = int(local.x / mStepWidth);
+	int idxY = int(local.y / mStepHeight);
+	return idxY * ColumnCount + idxX;
 }

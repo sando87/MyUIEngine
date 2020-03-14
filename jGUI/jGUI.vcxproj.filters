@@ -54,6 +54,9 @@
     <ClInclude Include="jViewGrid.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="jGenericValue.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="jUISystem.cpp">
@@ -90,6 +93,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="jViewGrid.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jGenericValue.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

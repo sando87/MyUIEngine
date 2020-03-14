@@ -43,7 +43,6 @@ public:
 	void SetMouseEvent(Point2 point, bool down, bool triggered);
 	string ToJsonString();
 	void UpdateView(jView *view, string jsonString);
-	jView *CreateView(int mouseX, int mouseY, int type);
 	jView *CreateView(jViewType type);
 	jView *FindTopView(int mouseX, int mouseY);
 	jView *FindView(int id);

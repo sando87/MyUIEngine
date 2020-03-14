@@ -44,6 +44,7 @@ bool jUIBitmap::Load()
 	return texture ? true : false;
 }
 
+
 jUIBitmap * jUIBitmap::Cache(string filename)
 {
 	if (filename.length() <= 0)

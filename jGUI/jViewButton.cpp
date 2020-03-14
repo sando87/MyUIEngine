@@ -24,8 +24,8 @@ jViewButton::~jViewButton()
 
 void jViewButton::OnLoad()
 {
-	jViewFont::OnLoad();
 	mTexture = jUIBitmap::Cache(Image.filename);
+	jViewFont::OnLoad();
 
 	if (mTexture)
 	{

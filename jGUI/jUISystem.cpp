@@ -87,24 +87,6 @@ void jUISystem::UpdateView(jView *view, string jsonString)
 	view->OnDeserialize(node);
 	view->LoadAll();
 }
-jView *jUISystem::CreateView(int mouseX, int mouseY, int type)
-{
-	if (mRootView == nullptr)
-		return nullptr;
-
-	jView *parent = mRootView->FindTopView(mouseX, mouseY);
-	if (parent == nullptr)
-		return nullptr;
-
-	jViewType viewType = (jViewType)type;
-	jView *newView = CreateView(viewType);
-	Point2 parentAbPos = parent->mRectAbsolute.GetMin();
-	newView->LocalX = (int)(mouseX - parentAbPos.x);
-	newView->LocalY = (int)(mouseY - parentAbPos.y);
-	parent->AddChild(newView);
-	newView->OnLoad();
-	return newView;
-}
 jView *jUISystem::FindTopView(int mouseX, int mouseY)
 {
 	if (mRootView != nullptr)
@@ -139,8 +121,10 @@ void jUISystem::ChangeParent(int id, int parentID)
 	if (me == mRootView)
 		return;
 
+	if (me->mParent != nullptr)
+		me->mParent->SubChild(me);
+
 	jView* parent = mViews[parentID];
-	me->mParent->SubChild(me);
 	parent->AddChild(me);
 }
 
@@ -166,7 +150,7 @@ jView * jUISystem::CallEventUpDownClick(EventParams & info)
 		{
 			mPreviousEventInfo.viewDown->mDowned = false;
 			if(mPreviousEventInfo.viewDown->EventMouseUp)
-				mPreviousEventInfo.viewDown->EventMouseUp(pt);
+				mPreviousEventInfo.viewDown->EventMouseUp(mPreviousEventInfo.viewDown, pt);
 		}
 
 		jView *downView = mRootView->FindTopView(info.mouseX, info.mouseY);
@@ -174,7 +158,7 @@ jView * jUISystem::CallEventUpDownClick(EventParams & info)
 		{
 			downView->mDowned = true;
 			if (downView->EventMouseDown)
-				downView->EventMouseDown(pt);
+				downView->EventMouseDown(downView, pt);
 		}
 
 		returnView = downView;
@@ -185,14 +169,14 @@ jView * jUISystem::CallEventUpDownClick(EventParams & info)
 		{
 			mPreviousEventInfo.viewDown->mDowned = false;
 			if (mPreviousEventInfo.viewDown->EventMouseUp)
-				mPreviousEventInfo.viewDown->EventMouseUp(pt);
+				mPreviousEventInfo.viewDown->EventMouseUp(mPreviousEventInfo.viewDown, pt);
 		}
 
 		jView *upView = mRootView->FindTopView(info.mouseX, info.mouseY);
 		if (upView != nullptr && upView == mPreviousEventInfo.viewDown)
 		{
 			if(upView->EventMouseClick)
-				upView->EventMouseClick(pt); //Mouse Click Invoked in case of same view...
+				upView->EventMouseClick(upView, pt); //Mouse Click Invoked in case of same view...
 		}
 
 		returnView = nullptr;
@@ -219,7 +203,7 @@ jView * jUISystem::CallEventEnterLeaveMove(EventParams & info)
 		{
 			mPreviousEventInfo.viewHovered->mHovered = false;
 			if(mPreviousEventInfo.viewHovered->EventMouseLeave)
-				mPreviousEventInfo.viewHovered->EventMouseLeave(pt);
+				mPreviousEventInfo.viewHovered->EventMouseLeave(mPreviousEventInfo.viewHovered, pt);
 		}
 
 		returnView = nullptr;
@@ -230,21 +214,21 @@ jView * jUISystem::CallEventEnterLeaveMove(EventParams & info)
 		{
 			hoverView->mHovered = true;
 			if (hoverView->EventMouseEnter)
-				hoverView->EventMouseEnter(pt);
+				hoverView->EventMouseEnter(hoverView, pt);
 		}
 		else if (mPreviousEventInfo.viewHovered == hoverView)
 		{
 			if(mPreviousEventInfo.viewHovered->EventMouseMove)
-				mPreviousEventInfo.viewHovered->EventMouseMove(pt);
+				mPreviousEventInfo.viewHovered->EventMouseMove(mPreviousEventInfo.viewHovered, pt);
 		}
 		else if (mPreviousEventInfo.viewHovered != nullptr)
 		{
 			mPreviousEventInfo.viewHovered->mHovered = false;
 			if (mPreviousEventInfo.viewHovered->EventMouseLeave)
-				mPreviousEventInfo.viewHovered->EventMouseLeave(pt);
+				mPreviousEventInfo.viewHovered->EventMouseLeave(mPreviousEventInfo.viewHovered, pt);
 			hoverView->mHovered = true;
 			if (hoverView->EventMouseEnter)
-				hoverView->EventMouseEnter(pt);
+				hoverView->EventMouseEnter(hoverView, pt);
 		}
 
 		returnView = hoverView;
