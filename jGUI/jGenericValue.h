@@ -19,7 +19,7 @@ public:
 	void operator=(u8 val) { mVal.u8val = val; }
 	void operator=(int val) { mVal.intval = val; }
 	void operator=(char val) { mVal.chval = val; }
-	void operator=(bool val) { mVal.bval = val; }
+	//void operator=(bool val) { mVal.bval = val; }
 	void operator=(std::string val) { mStr = val; }
 
 	template<typename Ty> Ty val() { return (Ty)mVal.pval; }
@@ -31,7 +31,7 @@ public:
 	template<> u8 val() { return mVal.u8val; }
 	template<> int val() { return mVal.intval; }
 	template<> char val() { return mVal.chval; }
-	template<> bool val() { return mVal.bval; }
+	//template<> bool val() { return mVal.bval; }
 	template<> std::string val() { return mStr; }
 
 private:
@@ -44,7 +44,7 @@ private:
 		u8 u8val;
 		int intval;
 		char chval;
-		bool bval;
+		//bool bval;
 	};
 	gtype mVal;
 	std::string mStr;
