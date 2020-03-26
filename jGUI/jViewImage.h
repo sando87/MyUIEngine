@@ -8,6 +8,10 @@ public:
 	virtual ~jViewImage();
 
 	PropImage Image;
+	float ClipRateLeft;
+	float ClipRateRight;
+	float ClipRateTop;
+	float ClipRateBottom;
 
 	double GetImageWidth() { return mTexture->width * (Image.right - Image.left); }
 	double GetImageHeight() { return mTexture->height * (Image.bottom - Image.top); }
@@ -19,6 +23,6 @@ protected:
 	virtual void OnSerialize(Json::Value & node);
 	virtual void OnDeserialize(Json::Value & node);
 
-	virtual Point2 CalcSize();
+	virtual Point2 CalcSizeImage();
 };
 

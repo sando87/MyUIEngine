@@ -24,7 +24,8 @@ struct EventParams
 class jUISystem
 {
 public:
-	static jUISystem *GetInst() { static jUISystem inst; return &inst; }
+	jUISystem();
+	~jUISystem();
 
 	function<void(DrawingParams)> EventDrawFill;
 	function<void(DrawingParams)> EventDrawOutline;
@@ -52,6 +53,7 @@ public:
 	void ChangeNeighbor(int id, int neighborID);
 
 private:
+	unsigned int mNextViewID;
 	EventParams mCurrentEventInfo;
 	EventParams mPreviousEventInfo;
 	jView *mRootView;
@@ -65,7 +67,5 @@ private:
 	jView *Parse(Json::Value & jsonNode);
 	Json::Value Serialize(jView *view);
 
-	jUISystem();
-	~jUISystem();
 };
 

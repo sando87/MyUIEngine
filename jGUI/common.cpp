@@ -9,15 +9,16 @@ unsigned int ToKey(const char *buf, int size)
 	for (int i = 0; i < size; ++i)
 	{
 		key ^= (unsigned int)buf[i] << shift;
-		shift = (shift + 8) % 32;
+		shift = (shift + 1) % 24;
 	}
 	return key;
 }
 
-jUIBitmap::jUIBitmap()
+jUIBitmap::jUIBitmap(jUISystem* form)
 {
-	width = 0;;
-	height = 0;;
+	mFrom = form;
+	width = 0;
+	height = 0;
 	byteperpixel = 0;
 	buf.clear();
 	fullname = "";
@@ -28,7 +29,7 @@ jUIBitmap::~jUIBitmap()
 {
 	if (texture)
 	{
-		jUISystem::GetInst()->OpReleaseTexture(texture);
+		mFrom->OpReleaseTexture(texture);
 		texture = nullptr;
 	}
 }
@@ -37,23 +38,23 @@ bool jUIBitmap::Load()
 {
 	if (texture)
 	{
-		jUISystem::GetInst()->OpReleaseTexture(texture);
+		mFrom->OpReleaseTexture(texture);
 		texture = nullptr;
 	}
-	texture = jUISystem::GetInst()->OpLoadTexture(this);
+	texture = mFrom->OpLoadTexture(this);
 	return texture ? true : false;
 }
 
 
-jUIBitmap * jUIBitmap::Cache(string filename)
+jUIBitmap * jUIBitmap::Cache(string filename, jUISystem* form)
 {
 	if (filename.length() <= 0)
 		return nullptr;
 
 	unsigned int key = ToKey(filename.c_str(), filename.length());
 	jUIBitmap *texture = (jUIBitmap *)jCacheMgr::GetInst().Cache(key, [&]() {
-		jUIBitmap *bitmap = new jUIBitmap();
-		bitmap->fullname = jUISystem::GetInst()->GetResourcePath() + filename;
+		jUIBitmap *bitmap = new jUIBitmap(form);
+		bitmap->fullname = form->GetResourcePath() + filename;
 		if (bitmap->Load() == false)
 		{
 			delete bitmap;

@@ -38,7 +38,7 @@ jFontCapture::~jFontCapture()
 {
 }
 
-void jFontCapture::Load(string fontFullname, int fontSize, wstring text_unicode)
+void jFontCapture::Load(string fontFullname, int fontSize, wstring text_unicode, jUISystem* form)
 {
 	mImage = nullptr;
 	mFontname = fontFullname;
@@ -47,7 +47,7 @@ void jFontCapture::Load(string fontFullname, int fontSize, wstring text_unicode)
 	mKey = CalcKey();
 
 	mImage = (jUIBitmap *)jCacheMgr::GetInst().Cache(mKey, [&]() {
-		jUIBitmap *bitmap = new jUIBitmap();
+		jUIBitmap *bitmap = new jUIBitmap(form);
 
 		FT_Face face;
 		if (FT_Init_FreeType(&library) != 0)
@@ -78,14 +78,14 @@ void jFontCapture::Load(string fontFullname, int fontSize, wstring text_unicode)
 		//showBitmap(text_dimensions.outpuffer, text_dimensions.width, text_dimensions.height);
 
 		bitmap->width = text_dimensions.width;
-		bitmap->height = text_dimensions.height;
+		bitmap->height = text_dimensions.height % 2 == 0 ? text_dimensions.height : text_dimensions.height + 1; //fixed texture clipping issue
 		bitmap->byteperpixel = 4;
-		bitmap->buf.resize(text_dimensions.width * text_dimensions.height);
+		bitmap->buf.resize(bitmap->width * bitmap->height);
+		memset(&bitmap->buf[0], 0x00, bitmap->buf.size());
 		int totalSize = text_dimensions.width * text_dimensions.height;
 		for (int i = 0; i < totalSize; ++i)
 		{
-			unsigned char value = 255 - text_dimensions.outpuffer[i];
-			jColor color(value, value, value, value == 255 ? 0 : 255);
+			jColor color(255, 255, 255, text_dimensions.outpuffer[i]);
 			bitmap->buf[i] = color;
 		}
 
@@ -271,8 +271,8 @@ void showBitmap(unsigned char* buf, int w, int h)
 	for (i = 0; i < h; i++)
 	{
 		for (j = 0; j < w; j++)
-			//printf("%2x ", buf[w * i + j]);
-			putchar(buf[w * i + j] == 0 ? '.' : '*');
+			printf("%2x ", buf[w * i + j]);
+			//putchar(buf[w * i + j] == 0 ? '.' : '*');
 			
 		putchar('\n');
 	}

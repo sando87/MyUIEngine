@@ -24,7 +24,7 @@ jViewButton::~jViewButton()
 
 void jViewButton::OnLoad()
 {
-	mTexture = jUIBitmap::Cache(Image.filename);
+	mTexture = jUIBitmap::Cache(Image.filename, GetForm());
 	jViewFont::OnLoad();
 
 	if (mTexture)
@@ -65,7 +65,7 @@ void jViewButton::OnDraw()
 			params.color = jColor(220, 220, 220, 255);
 		}
 
-		jUISystem::GetInst()->EventDrawTexture(params);
+		GetForm()->EventDrawTexture(params);
 	}
 	else
 	{
@@ -73,29 +73,29 @@ void jViewButton::OnDraw()
 		if (mDowned)
 		{
 			params.color = jColor(ColorButton.r - 20, ColorButton.g - 20, ColorButton.b - 20, ColorButton.a);
-			jUISystem::GetInst()->EventDrawFill(params);
+			GetForm()->EventDrawFill(params);
 			params.color = ColorOutline;
-			jUISystem::GetInst()->EventDrawOutline(params);
+			GetForm()->EventDrawOutline(params);
 		}
 		else if (mHovered)
 		{
 			params.color = jColor(ColorButton.r + 5 , ColorButton.g + 5, ColorButton.b + 5, ColorButton.a);
-			jUISystem::GetInst()->EventDrawFill(params);
+			GetForm()->EventDrawFill(params);
 			params.color = jColor(ColorOutline.r + 5, ColorOutline.g + 5, ColorOutline.b + 5, ColorOutline.a);;
-			jUISystem::GetInst()->EventDrawOutline(params);
+			GetForm()->EventDrawOutline(params);
 		}
 		else
 		{
-			jUISystem::GetInst()->EventDrawFill(params);
+			GetForm()->EventDrawFill(params);
 			params.color = ColorOutline;
-			jUISystem::GetInst()->EventDrawOutline(params);
+			GetForm()->EventDrawOutline(params);
 		}
 
 		if (mFont.Texture() != nullptr)
 		{
 			params.rect = mRectText;
 			params.color = ColorFont;
-			jUISystem::GetInst()->EventDrawTexture(params);
+			GetForm()->EventDrawTexture(params);
 		}
 	}
 }

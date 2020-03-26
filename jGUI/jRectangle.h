@@ -14,6 +14,7 @@ public:
 	void Zoom(double rate);
 	bool Contains(Point2 point);
 	jRectangle Intersection(jRectangle & rect);
+	jRectangle ClipRate(float rateL, float rateR, float rateT, float rateB);
 
 	Point2 GetMin() { return mMin; }
 	Point2 GetMax() { return mMax; }

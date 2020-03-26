@@ -49,16 +49,29 @@ void jRectangle::Zoom(double rate)
 
 bool jRectangle::Contains(Point2 point)
 {
-	return mMin.x <= point.x && point.x <= mMax.x && mMin.y <= point.y && point.y <= mMax.y;
+	return mMin.x <= point.x && point.x < mMax.x && mMin.y <= point.y && point.y < mMax.y;
 }
 
 jRectangle jRectangle::Intersection(jRectangle & rect)
 {
 	jRectangle inter;
 	double top = fmax(Top(), rect.Top());
-	double bottom = fmax(Bottom(), rect.Bottom());
+	double bottom = fmin(Bottom(), rect.Bottom());
 	double left = fmax(Left(), rect.Left());
-	double right = fmax(Right(), rect.Right());
+	double right = fmin(Right(), rect.Right());
 	inter.SetMinMax(Point2(left, top), Point2(right, bottom));
 	return inter;
+}
+
+jRectangle jRectangle::ClipRate(float rateL, float rateR, float rateT, float rateB)
+{
+	double left = mMin.x + (Width() * rateL);
+	left = left > mMax.x ? mMax.x : left;
+	double right = mMax.x - (Width() * rateR);
+	right = right < mMin.x ? mMin.x : right;
+	double top = mMin.y + (Height() * rateT);
+	top = top > mMax.y ? mMax.y : top;
+	double bottom = mMax.y - (Height() * rateB);
+	bottom = bottom < mMin.y ? mMin.y : bottom;
+	return jRectangle(left, top, right - left, bottom - top);
 }

@@ -5,6 +5,8 @@
 #include <unordered_map>
 using namespace std;
 
+class jUISystem;
+
 #include "json\json.h"
 #include "common.h"
 #include "jGenericValue.h"
@@ -52,6 +54,7 @@ public:
 	string ToJsonString();
 	bool HaveDot(string str);
 	jView* GetParent() { return mParent; }
+	jUISystem* GetForm() { return mForm; }
 	jRectangle GetRectAbsolute() { return mRectAbsolute; }
 	Point2 GetLocalPos() { return mParent==nullptr ? mRectAbsolute.GetMin() : (mRectAbsolute.GetMin() - mParent->GetRectAbsolute().GetMin()); }
 	double GetWidth() { return mRectAbsolute.Width(); }
@@ -60,6 +63,7 @@ public:
 protected:
 	int mID;
 	jView * mParent;
+	jUISystem* mForm;
 	DrawingParams mRenderParam;
 	bool mDowned;
 	bool mHovered;

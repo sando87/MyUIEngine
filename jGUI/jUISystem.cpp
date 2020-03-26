@@ -12,6 +12,7 @@
 
 jUISystem::jUISystem()
 {
+	mNextViewID = 1;
 	mRootView = nullptr;
 	mResourcePath = "./res/";
 }
@@ -285,10 +286,10 @@ jView *jUISystem::CreateView(jViewType type)
 	default: break;
 	}
 
-	static int gID = 1;
-	view->mID = gID;
-	mViews[gID] = view;
-	gID++;
+	view->mID = mNextViewID;
+	view->mForm = this;
+	mViews[mNextViewID] = view;
+	mNextViewID++;
 	return view;
 }
 

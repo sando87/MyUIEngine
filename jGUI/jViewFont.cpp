@@ -22,7 +22,7 @@ jViewFont::~jViewFont()
 void jViewFont::OnLoad()
 {
 	wstring uniText(Text.begin(), Text.end());
-	mFont.Load(jUISystem::GetInst()->GetResourcePath() + FontName, FontSize, uniText);
+	mFont.Load(GetForm()->GetResourcePath() + FontName, FontSize, uniText, GetForm());
 	jView::OnLoad();
 
 	Point2 pos;
@@ -55,7 +55,7 @@ void jViewFont::OnLoad()
 
 void jViewFont::OnDraw()
 {
-	jUISystem::GetInst()->EventDrawTexture(mRenderParam);
+	GetForm()->EventDrawTexture(mRenderParam);
 }
 
 void jViewFont::OnSerialize(Json::Value & node)
@@ -66,13 +66,16 @@ void jViewFont::OnSerialize(Json::Value & node)
 	node["FontName"] = FontName;
 	node["FontSize"] = FontSize;
 	node["Style"] = Style;
+	node["#Style"] = "Enum&Regular,Bold,Italic,Underline,Strikeout";
 	node["Align"] = Align;
+	node["#Align"] = "Enum&TopLeft,Top,TopRight,Left,Center,Right,BottomLeft,Bottom,BottomRight";
 	Json::Value color;
 	color.append(ColorFont.r);
 	color.append(ColorFont.g);
 	color.append(ColorFont.b);
 	color.append(ColorFont.a);
 	node["ColorFont"] = color;
+	node["#ColorFont"] = "Color";
 }
 
 void jViewFont::OnDeserialize(Json::Value & node)

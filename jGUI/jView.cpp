@@ -130,7 +130,7 @@ void jView::OnLoad()
 
 void jView::OnDraw()
 {
-	jUISystem::GetInst()->EventDrawFill(mRenderParam);
+	GetForm()->EventDrawFill(mRenderParam);
 }
 
 void jView::OnSerialize(Json::Value & node)

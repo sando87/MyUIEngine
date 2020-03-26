@@ -17,6 +17,11 @@ jViewImage::jViewImage()
 	Image.top = 0.0f;
 	Image.bottom = 1.0f;
 
+	ClipRateLeft = 0;
+	ClipRateRight = 0;
+	ClipRateTop = 0;
+	ClipRateBottom = 0;
+
 	mTexture = nullptr;
 }
 
@@ -27,18 +32,28 @@ jViewImage::~jViewImage()
 
 void jViewImage::OnLoad()
 {
-	mTexture = jUIBitmap::Cache(Image.filename);
-	jView::OnLoad();
+	mTexture = jUIBitmap::Cache(Image.filename, GetForm());
+	//jView::OnLoad();
+
+	mDowned = false;
+	mHovered = false;
+	
+	Point2 abSize = CalcSizeImage();
+	Point2 abPos = CalcPosition(abSize);
+	mRectAbsolute.SetPosSize(abPos, abSize);
 
 	mRenderParam.rect = mRectAbsolute;
 	mRenderParam.color = jColor(255, 255, 255, 255);
 	mRenderParam.texture = mTexture ? mTexture->texture : nullptr;
 	mRenderParam.uv = jRectangle(Image.left, Image.top, Image.right - Image.left, Image.bottom - Image.top);
+
+	jRectangle clipper = mRectAbsolute.ClipRate(ClipRateLeft, ClipRateRight, ClipRateTop, ClipRateBottom);
+	mRenderParam.Clip(clipper);
 }
 
 void jViewImage::OnDraw()
 {
-	jUISystem::GetInst()->EventDrawTexture(mRenderParam);
+	GetForm()->EventDrawTexture(mRenderParam);
 }
 
 void jViewImage::OnSerialize(Json::Value & node)
@@ -52,6 +67,10 @@ void jViewImage::OnSerialize(Json::Value & node)
 	imgNode["top"] = Image.top;
 	imgNode["bottom"] = Image.bottom;
 	node["Image"] = imgNode;
+	node["ClipRateLeft"] = ClipRateLeft;
+	node["ClipRateRight"] = ClipRateRight;
+	node["ClipRateTop"] = ClipRateTop;
+	node["ClipRateBottom"] = ClipRateBottom;
 }
 
 void jViewImage::OnDeserialize(Json::Value & node)
@@ -64,9 +83,13 @@ void jViewImage::OnDeserialize(Json::Value & node)
 	Image.right = imgNode["right"].asFloat();
 	Image.top = imgNode["top"].asFloat();
 	Image.bottom = imgNode["bottom"].asFloat();
+	ClipRateLeft = node["ClipRateLeft"].asFloat();
+	ClipRateRight = node["ClipRateRight"].asFloat();
+	ClipRateTop = node["ClipRateTop"].asFloat();
+	ClipRateBottom = node["ClipRateBottom"].asFloat();
 }
 
-Point2 jViewImage::CalcSize()
+Point2 jViewImage::CalcSizeImage()
 {
 	if (mParent == nullptr)
 		return Point2(atoi(Width.c_str()), atoi(Height.c_str()));

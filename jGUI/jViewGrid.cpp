@@ -37,7 +37,7 @@ void jViewGrid::OnLoad()
 			int localX = int(x * mStepWidth);
 			int localY = int(y * mStepHeight);
 			int idx = y * ColumnCount + x;
-			jViewImage* imageView = (jViewImage*)jUISystem::GetInst()->CreateView(jViewType::Image);
+			jViewImage* imageView = (jViewImage*)GetForm()->CreateView(jViewType::Image);
 			imageView->LocalX = to_string(localX);
 			imageView->LocalY = to_string(localY);
 			imageView->Width = to_string((int)mStepWidth);
@@ -86,7 +86,7 @@ void jViewGrid::OnLoad()
 
 void jViewGrid::OnDraw()
 {
-	jUISystem::GetInst()->EventDrawTexture(mRenderParam);
+	//GetForm()->EventDrawTexture(mRenderParam);
 }
 
 void jViewGrid::OnSerialize(Json::Value & node)

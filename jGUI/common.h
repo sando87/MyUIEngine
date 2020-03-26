@@ -11,6 +11,7 @@ using namespace std;
 #define _errorIf(p)  if(p)printf("error [%s] [%d]\n", __FILE__, __LINE__)
 #define _errorTrace() printf("error [%s] [%d]\n", __FILE__, __LINE__)
 
+class jUISystem;
 
 enum jViewType
 {
@@ -44,16 +45,19 @@ struct jColor
 struct jUIBitmap
 {
 public:
+	jUIBitmap(jUISystem* form);
+	~jUIBitmap();
+
 	int width;
 	int height;
 	int byteperpixel;
 	vector<jColor> buf;
 	string fullname;
 	void *texture;
-	jUIBitmap();
-	~jUIBitmap();
 	bool Load();
-	static jUIBitmap* Cache(string filename);
+	static jUIBitmap* Cache(string filename, jUISystem* form);
+private:
+	jUISystem * mFrom;
 };
 
 struct PropImage
