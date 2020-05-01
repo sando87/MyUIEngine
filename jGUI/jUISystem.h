@@ -36,6 +36,7 @@ public:
 
 	void SetResourcePath(string pathname) { mResourcePath = pathname; }
 	string GetResourcePath() { return mResourcePath; }
+	jView * GetRootView() { return mRootView; }
 	jView * ParseJson(string filename);
 	jView * ParseJsonString(string json);
 	void LoadViews();
